@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router-dom";
+
 import {
   createUser,
   createService,
@@ -13,7 +17,7 @@ import {
   getSocialMedia,
 } from "../services/admin";
 
-const CreateCustomer = () => {
+const CreateCustomer = ({ onAddSuccess }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [customerData, setCustomerData] = useState({
@@ -41,6 +45,7 @@ const CreateCustomer = () => {
   const [source, setSource] = useState([]);
   const [status, setStatus] = useState([]);
   const [socialMedia, setSocialMedia] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -143,6 +148,7 @@ const CreateCustomer = () => {
     try {
       const response = await createUser(formData);
       if (response && response.data) {
+        onAddSuccess();
         console.log("Tạo khách hàng thành công:", response.data);
       }
     } catch (error) {
@@ -383,6 +389,16 @@ const CreateCustomer = () => {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium">Ghi chú</label>
+                <input
+                  type="text"
+                  name="notes"
+                  value={customerData.notes}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                />
+              </div>
               <div className="p-4">
                 <h1 className="text-lg font-bold mb-4">Chọn khoảng giờ</h1>
                 <div className="flex items-center gap-4">
@@ -504,32 +520,50 @@ const CreateCustomer = () => {
                   </select>
                 </div>
               ))}
-              <button
-                type="button"
-                onClick={() => {
-                  const newComment = {
-                    title: "",
-                    time: "",
-                    status_id: 0,
-                  };
-                  setCustomerData({
-                    ...customerData,
-                    comments: [...customerData.comments, newComment],
-                  });
-                }}
-                className="px-4 py-2 bg-indigo-500 text-white rounded-md shadow"
-              >
-                Thêm lần chăm sóc
-              </button>
+
+              <div className="flex items-center justify-center text-[#be8208] ">
+                <FontAwesomeIcon
+                  icon={faPlus}
+                  className=" m-3 cursor-pointer text-[20px]"
+                  onClick={() => {
+                    const newComment = {
+                      title: "",
+                      time: "",
+                      status_id: 0,
+                    };
+                    setCustomerData({
+                      ...customerData,
+                      comments: [...customerData.comments, newComment],
+                    });
+                  }}
+                />
+                <span
+                  onClick={() => {
+                    const newComment = {
+                      title: "",
+                      time: "",
+                      status_id: 0,
+                    };
+                    setCustomerData({
+                      ...customerData,
+                      comments: [...customerData.comments, newComment],
+                    });
+                  }}
+                  className="cursor-pointer"
+                >
+                  Thêm
+                </span>
+              </div>
             </div>
           </div>
-
-          <button
-            type="submit"
-            className="mt-6 px-4 py-2 bg-green-500 text-white rounded-md shadow"
-          >
-            Lưu thông tin khách hàng
-          </button>
+          <div className="float-end">
+            <button
+              type="submit"
+              className="mt-6 px-12 py-2 bg-[#be8208] text-white rounded-md shadow text-[12px]"
+            >
+              Xác nhận
+            </button>
+          </div>
         </div>
       </div>
     </form>
