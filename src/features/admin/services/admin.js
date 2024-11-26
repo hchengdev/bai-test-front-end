@@ -173,6 +173,78 @@ const createSocialMedia = async (social) => {
   }
 };
 
+const getService = async () => {
+  const token = getTokenFromLocalStorage();
+  try {
+    const response = await axios.get(
+      `https://dev.thabicare.zenix.com.vn/api/v1/services/`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy dịch vụ:", error);
+    throw error;
+  }
+};
+
+const getStatus = async () => {
+  const token = getTokenFromLocalStorage();
+  try {
+    const response = await axios.get(
+      `https://dev.thabicare.zenix.com.vn/api/v1/customer-status/`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy trạng thái:", error);
+    throw error;
+  }
+};
+
+const getSource = async () => {
+  const token = getTokenFromLocalStorage();
+  try {
+    const response = await axios.get(
+      `https://dev.thabicare.zenix.com.vn/api/v1/customer-source/`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy nguồn khách hàng:", error);
+    throw error;
+  }
+};
+
+const getSocialMedia = async () => {
+  const token = getTokenFromLocalStorage();
+  try {
+    const response = await axios.get(
+      `https://dev.thabicare.zenix.com.vn/api/v1/customer-source/`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy nguồn mạng xã hội:", error);
+    throw error;
+  }
+};
+
 export {
   useAuth,
   getUser,
@@ -182,4 +254,8 @@ export {
   createSource,
   createSocialMedia,
   createStatus,
+  getService,
+  getStatus,
+  getSource,
+  getSocialMedia,
 };
