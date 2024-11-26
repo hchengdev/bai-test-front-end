@@ -17,6 +17,7 @@ const CreateCustomer = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [customerData, setCustomerData] = useState({
+    status: 0,
     full_name: "",
     gender: "Nam",
     date_of_birth: "",
@@ -119,6 +120,7 @@ const CreateCustomer = () => {
     const followDownDate = endDate ? endDate.toISOString() : null;
 
     const formData = {
+      status: customerData.status,
       full_name: customerData.full_name,
       gender: customerData.gender,
       date_of_birth: customerData.date_of_birth,
@@ -239,13 +241,7 @@ const CreateCustomer = () => {
                 <select
                   name="status"
                   value={customerData.status_id}
-                  onChange={(e) => {
-                    const updatedStatusId = Number(e.target.value);
-                    setCustomerData({
-                      ...customerData,
-                      status_id: updatedStatusId,
-                    });
-                  }}
+                  onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                 >
                   <option value={0}>Chọn trạng thái</option>
@@ -255,6 +251,7 @@ const CreateCustomer = () => {
                     </option>
                   ))}
                 </select>
+                <div></div>
               </div>
             </div>
           </div>

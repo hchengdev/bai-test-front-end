@@ -24,7 +24,7 @@ const getUserFromLocalStorage = () => {
   if (user) {
     try {
       const parsedUser = JSON.parse(user);
-      return parsedUser.user.username;
+      return parsedUser.user;
     } catch (error) {
       console.error(
         "Lỗi khi phân tích dữ liệu người dùng từ localStorage",
@@ -72,7 +72,7 @@ const getUser = async () => {
         },
       }
     );
-    return response.data;
+    return response.data.results;
   } catch (error) {
     throw error;
   }
