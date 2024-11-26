@@ -97,4 +97,89 @@ const createUser = async (userData) => {
   }
 };
 
-export { useAuth, getUser, getUserFromLocalStorage, createUser };
+const createService = async (service) => {
+  const token = getTokenFromLocalStorage();
+  try {
+    const response = await axios.post(
+      `https://dev.thabicare.zenix.com.vn/api/v1/services/`,
+      service,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("L��i khi tạo dịch vụ:", error);
+    throw error;
+  }
+};
+
+const createStatus = async (status) => {
+  const token = getTokenFromLocalStorage();
+  try {
+    const response = await axios.post(
+      `https://dev.thabicare.zenix.com.vn/api/v1/customer-status/`,
+      status,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("L��i khi tạo trạng thái:", error);
+    throw error;
+  }
+};
+
+const createSource = async (source) => {
+  const token = getTokenFromLocalStorage();
+  try {
+    const response = await axios.post(
+      `https://dev.thabicare.zenix.com.vn/api/v1/customer-source/`,
+      source,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("L��i khi tạo source:", error);
+    throw error;
+  }
+};
+
+const createSocialMedia = async (social) => {
+  const token = getTokenFromLocalStorage();
+  try {
+    const response = await axios.post(
+      `https://dev.thabicare.zenix.com.vn/api/v1/customer-source/`,
+      social,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("L��i khi tạo source:", error);
+    throw error;
+  }
+};
+
+export {
+  useAuth,
+  getUser,
+  getUserFromLocalStorage,
+  createUser,
+  createService,
+  createSource,
+  createSocialMedia,
+  createStatus,
+};
