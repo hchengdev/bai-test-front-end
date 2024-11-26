@@ -158,7 +158,7 @@ const createSocialMedia = async (social) => {
   const token = getTokenFromLocalStorage();
   try {
     const response = await axios.post(
-      `https://dev.thabicare.zenix.com.vn/api/v1/customer-source/`,
+      `https://dev.thabicare.zenix.com.vn/api/v1/customer-social/`,
       social,
       {
         headers: {
@@ -202,7 +202,7 @@ const getStatus = async () => {
         },
       }
     );
-    return response.data;
+    return response.data.results;
   } catch (error) {
     console.error("Lỗi khi lấy trạng thái:", error);
     throw error;
@@ -220,7 +220,7 @@ const getSource = async () => {
         },
       }
     );
-    return response.data;
+    return response.data.results;
   } catch (error) {
     console.error("Lỗi khi lấy nguồn khách hàng:", error);
     throw error;
@@ -231,14 +231,14 @@ const getSocialMedia = async () => {
   const token = getTokenFromLocalStorage();
   try {
     const response = await axios.get(
-      `https://dev.thabicare.zenix.com.vn/api/v1/customer-source/`,
+      `https://dev.thabicare.zenix.com.vn/api/v1/customer-social/`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
-    return response.data;
+    return response.data.results;
   } catch (error) {
     console.error("Lỗi khi lấy nguồn mạng xã hội:", error);
     throw error;

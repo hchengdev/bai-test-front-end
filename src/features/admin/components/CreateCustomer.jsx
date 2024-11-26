@@ -32,17 +32,20 @@ const CreateCustomer = () => {
     ward: "",
     follow_up_date: "",
     follow_down_date: "",
-    careDetails: [{ attempt: 1, date: "", result: "", status: 0 }],
+    detailed_info: "",
+    comments: [{ title: 1, time: "", status_id: 0 }],
   });
 
   const [services, setServices] = useState([]);
+  const [source, setSource] = useState([]);
+  const [status, setStatus] = useState([]);
+  const [socialMedia, setSocialMedia] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getService();
         setServices(response);
-        console.log("Services fetched successfully:", response);
       } catch (err) {
         console.error("Error fetching user:", err);
       }
@@ -50,7 +53,41 @@ const CreateCustomer = () => {
     fetchData();
   }, []);
 
-  console.log(services);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getSource();
+        setSource(response);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getStatus();
+        setStatus(response);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+      }
+    };
+    fetchData();
+  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getSocialMedia();
+        setSocialMedia(response);
+        console.log("Services fetched successfully:", response);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+      }
+    };
+    fetchData();
+  }, []);
 
   const toggleService = (serviceId) => {
     setCustomerData({
@@ -63,7 +100,13 @@ const CreateCustomer = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCustomerData({ ...customerData, [name]: value });
+    const newValue =
+      name === "social_media" || name === "source" ? parseInt(value) : value;
+
+    setCustomerData({
+      ...customerData,
+      [name]: newValue,
+    });
   };
 
   const handleGenderChange = (e) => {
@@ -72,6 +115,8 @@ const CreateCustomer = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const followUpDate = startDate ? startDate.toISOString() : null;
+    const followDownDate = endDate ? endDate.toISOString() : null;
 
     const formData = {
       full_name: customerData.full_name,
@@ -87,9 +132,10 @@ const CreateCustomer = () => {
       city: customerData.city,
       district: customerData.district,
       ward: customerData.ward,
-      follow_up_date: customerData.follow_up_date,
-      follow_down_date: customerData.follow_down_date,
-      careDetails: customerData.careDetails,
+      follow_up_date: followUpDate,
+      follow_down_date: followDownDate,
+      detailed_info: customerData.detailed_info,
+      comments: customerData.comments,
     };
 
     try {
@@ -100,21 +146,6 @@ const CreateCustomer = () => {
     } catch (error) {
       console.error("Đã xảy ra lỗi khi tạo khách hàng:", error);
     }
-  };
-
-  const addCareDetail = () => {
-    setCustomerData({
-      ...customerData,
-      careDetails: [
-        ...customerData.careDetails,
-        {
-          attempt: customerData.careDetails.length + 1,
-          date: "",
-          result: "",
-          status: 0,
-        },
-      ],
-    });
   };
 
   return (
@@ -193,10 +224,36 @@ const CreateCustomer = () => {
                   onChange={handleInputChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                 >
-                  <option value={0}>Chọn nguồn</option>
-                  <option value={1}>Facebook</option>
-                  <option value={2}>Google</option>
-                  <option value={3}>Khác</option>
+                  <option value={0}>Website</option>
+                  {source.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Trạng thái
+                </label>
+                <select
+                  name="status"
+                  value={customerData.status_id}
+                  onChange={(e) => {
+                    const updatedStatusId = Number(e.target.value);
+                    setCustomerData({
+                      ...customerData,
+                      status_id: updatedStatusId,
+                    });
+                  }}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                >
+                  <option value={0}>Chọn trạng thái</option>
+                  {status.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.title}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -236,10 +293,26 @@ const CreateCustomer = () => {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                 >
                   <option value={0}>Chọn mạng xã hội</option>
-                  <option value={1}>Facebook</option>
-                  <option value={2}>Zalo</option>
-                  <option value={3}>Khác</option>
+                  {socialMedia.map((media) => (
+                    <option key={media.id} value={media.id}>
+                      {media.title}
+                    </option>
+                  ))}
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Url mxh
+                </label>
+                <input
+                  type="text"
+                  name="detailed_info"
+                  value={customerData.detailed_info}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  placeholder="Nhập thông tin chi tiết"
+                />
               </div>
             </div>
           </div>
@@ -327,7 +400,7 @@ const CreateCustomer = () => {
                       showTimeSelectOnly
                       timeIntervals={15}
                       timeCaption="Thời gian"
-                      dateFormat="HH:mm"
+                      dateFormat="yyyy-MM-dd'T'HH:mm:ss"
                       placeholderText="Chọn giờ bắt đầu"
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
@@ -344,14 +417,13 @@ const CreateCustomer = () => {
                       showTimeSelectOnly
                       timeIntervals={15}
                       timeCaption="Thời gian"
-                      dateFormat="HH:mm"
+                      dateFormat="yyyy-MM-dd'T'HH:mm:ss"
                       placeholderText="Chọn giờ kết thúc"
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </div>
                 </div>
 
-                {/* Hiển thị kết quả */}
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">
                     Khoảng giờ đã chọn
@@ -360,7 +432,9 @@ const CreateCustomer = () => {
                     type="text"
                     value={
                       startDate && endDate
-                        ? `${startDate.getHours()}:${startDate.getMinutes()} - ${endDate.getHours()}:${endDate.getMinutes()}`
+                        ? `${startDate.toISOString().slice(11, 16)} - ${endDate
+                            .toISOString()
+                            .slice(11, 16)}`
                         : "Chưa chọn"
                     }
                     readOnly
@@ -376,63 +450,76 @@ const CreateCustomer = () => {
               4. Thông tin chăm sóc khách hàng
             </h3>
             <div className="space-y-4">
-              {customerData.careDetails.map((care, index) => (
+              {customerData.comments.map((comment, index) => (
                 <div
                   key={index}
                   className="grid grid-cols-4 items-center gap-4 p-4 border rounded-md"
                 >
-                  <span className="font-semibold">Lần {care.attempt}</span>
+                  <span className="font-semibold">Lần {index + 1}</span>
                   <input
-                    type="date"
-                    name={`careDetails_${index}_date`}
-                    value={care.date}
+                    type="datetime-local"
+                    name={`time_${index}`}
+                    value={comment.time}
                     onChange={(e) => {
-                      const newCareDetails = [...customerData.careDetails];
-                      newCareDetails[index].date = e.target.value;
+                      const newComments = [...customerData.comments];
+                      newComments[index].time = e.target.value;
                       setCustomerData({
                         ...customerData,
-                        careDetails: newCareDetails,
+                        comments: newComments,
                       });
                     }}
                     className="col-span-1 rounded-md border-gray-300 shadow-sm"
                   />
                   <input
                     type="text"
-                    name={`careDetails_${index}_result`}
-                    value={care.result}
+                    name={`title_${index}`}
+                    value={comment.title}
                     onChange={(e) => {
-                      const newCareDetails = [...customerData.careDetails];
-                      newCareDetails[index].result = e.target.value;
+                      const newComments = [...customerData.comments];
+                      newComments[index].title = e.target.value;
                       setCustomerData({
                         ...customerData,
-                        careDetails: newCareDetails,
+                        comments: newComments,
                       });
                     }}
-                    placeholder="Kết quả chăm sóc"
+                    placeholder="Tiêu đề chăm sóc"
                     className="col-span-1 rounded-md border-gray-300 shadow-sm"
                   />
                   <select
-                    name={`careDetails_${index}_status`}
-                    value={care.status}
+                    name={`status_${index}`}
+                    value={comment.status_id}
                     onChange={(e) => {
-                      const newCareDetails = [...customerData.careDetails];
-                      newCareDetails[index].status = parseInt(e.target.value);
+                      const newComments = [...customerData.comments];
+                      newComments[index].status_id = Number(e.target.value);
                       setCustomerData({
                         ...customerData,
-                        careDetails: newCareDetails,
+                        comments: newComments,
                       });
                     }}
-                    className="col-span-1 rounded-md border-gray-300 shadow-sm"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                   >
-                    <option value={0}>Chọn trạng thái</option>
-                    <option value={1}>Đang xử lý</option>
-                    <option value={2}>Hoàn thành</option>
+                    <option value={0}>Trạng thái</option>
+                    {status.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.title}
+                      </option>
+                    ))}
                   </select>
                 </div>
               ))}
               <button
                 type="button"
-                onClick={addCareDetail}
+                onClick={() => {
+                  const newComment = {
+                    title: "",
+                    time: "",
+                    status_id: 0,
+                  };
+                  setCustomerData({
+                    ...customerData,
+                    comments: [...customerData.comments, newComment],
+                  });
+                }}
                 className="px-4 py-2 bg-indigo-500 text-white rounded-md shadow"
               >
                 Thêm lần chăm sóc
