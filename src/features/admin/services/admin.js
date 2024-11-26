@@ -184,7 +184,7 @@ const getService = async () => {
         },
       }
     );
-    return response.data;
+    return response.data.results;
   } catch (error) {
     console.error("Lỗi khi lấy dịch vụ:", error);
     throw error;

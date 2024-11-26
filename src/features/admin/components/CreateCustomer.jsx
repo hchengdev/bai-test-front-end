@@ -1,7 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { createUser } from "../services/admin";
+import {
+  createUser,
+  createService,
+  createSource,
+  createSocialMedia,
+  createStatus,
+  getService,
+  getStatus,
+  getSource,
+  getSocialMedia,
+} from "../services/admin";
 
 const CreateCustomer = () => {
   const [startDate, setStartDate] = useState(null);
@@ -25,6 +35,32 @@ const CreateCustomer = () => {
     careDetails: [{ attempt: 1, date: "", result: "", status: 0 }],
   });
 
+  const [services, setServices] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getService();
+        setServices(response);
+        console.log("Services fetched successfully:", response);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  console.log(services);
+
+  const toggleService = (serviceId) => {
+    setCustomerData({
+      ...customerData,
+      service: customerData.service.includes(serviceId)
+        ? customerData.service.filter((s) => s !== serviceId)
+        : [...customerData.service, serviceId],
+    });
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCustomerData({ ...customerData, [name]: value });
@@ -36,15 +72,6 @@ const CreateCustomer = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // if (
-    //   !customerData.full_name ||
-    //   !customerData.phone_number ||
-    //   customerData.service.length === 0
-    // ) {
-    //   alert("Vui lòng điền đầy đủ thông tin bắt buộc!");
-    //   return;
-    // }
 
     const formData = {
       full_name: customerData.full_name,
@@ -227,42 +254,20 @@ const CreateCustomer = () => {
                   Sản phẩm quan tâm *
                 </label>
                 <div className="flex gap-2 mt-1">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setCustomerData({
-                        ...customerData,
-                        service: customerData.service.includes(1)
-                          ? customerData.service.filter((s) => s !== 1)
-                          : [...customerData.service, 1],
-                      })
-                    }
-                    className={`px-4 py-2 rounded ${
-                      customerData.service.includes(1)
-                        ? "bg-indigo-500 text-white"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    Trị liệu dưỡng sinh
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setCustomerData({
-                        ...customerData,
-                        service: customerData.service.includes(2)
-                          ? customerData.service.filter((s) => s !== 2)
-                          : [...customerData.service, 2],
-                      })
-                    }
-                    className={`px-4 py-2 rounded ${
-                      customerData.service.includes(2)
-                        ? "bg-indigo-500 text-white"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    Xoa bóp cổ vai gáy
-                  </button>
+                  {services.map((service) => (
+                    <button
+                      key={service.id}
+                      type="button"
+                      onClick={() => toggleService(service.id)}
+                      className={`px-4 py-2 rounded ${
+                        customerData.service.includes(service.id)
+                          ? "bg-indigo-500 text-white"
+                          : "bg-gray-200"
+                      }`}
+                    >
+                      {service.title}
+                    </button>
+                  ))}
                 </div>
               </div>
 
